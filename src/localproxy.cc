@@ -1519,6 +1519,7 @@ void LocalProxy::handleScopeProbingMessage(Vector<String> IDs, Packet* p)
            IBFSIZE, FID_LEN) ;
     memcpy(&hop_count, p->data()+FID_LEN+sizeof(unsigned char)+sizeof (numberOfIDs)+index+IBFSIZE+\
            FID_LEN, sizeof(hop_count)) ;
+    hop_count-- ;//since the hop_count is the # of nodes along the path
     memcpy(&total_distance, p->data()+FID_LEN+sizeof(unsigned char)+sizeof (numberOfIDs)+index+IBFSIZE+\
            FID_LEN+sizeof(hop_count),sizeof(total_distance)) ;
     memcpy(&noofcache, p->data()+FID_LEN+sizeof(unsigned char)+sizeof (numberOfIDs)+index+IBFSIZE+\
@@ -1557,13 +1558,13 @@ void LocalProxy::handleScopeProbingMessage(Vector<String> IDs, Packet* p)
             }
             else
             {//if the information itme has been updated before
-                if(cached && (tempdis >= avg_hop_count))
+                if(cached && (tempdis > avg_hop_count))
                 {//if cached along the path, compare with avg_hop_count
                     as->iid_FID_map.set(iid_iter->_strData, to_pub_FID) ;
                     as->iid_p2sFID.set(iid_iter->_strData, to_sub_FID) ;
                     as->iid_distance_map.set(iid_iter->_strData, avg_hop_count) ;
                 }
-                if(!cached && (tempdis >= hop_count))
+                if(!cached && (tempdis > hop_count))
                 {//if not cached, compare with hop count
                     as->iid_FID_map.set(iid_iter->_strData, to_pub_FID) ;
                     as->iid_p2sFID.set(iid_iter->_strData, to_sub_FID) ;
